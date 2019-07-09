@@ -9,3 +9,4 @@ aiorpcx>=0.17,<0.18
 aiohttp>=3.3.0
 aiohttp_socks
 certifi
+cpupower

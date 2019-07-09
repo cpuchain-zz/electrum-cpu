@@ -1,12 +1,13 @@
-Electrum - Lightweight Bitcoin client
+Electrum for CPUchain- Lightweight CPUchain client
 =====================================
 
 ::
 
   Licence: MIT Licence
-  Author: Thomas Voegtlin
+  Origin Author: Thomas Voegtlin
+  Port Maintainer: Min Khang Aung
   Language: Python (>= 3.6)
-  Homepage: https://electrum.org/
+  Homepage: https://cpuchain.org/
 
 
 .. image:: https://travis-ci.org/spesmilo/electrum.svg?branch=master
@@ -26,7 +27,7 @@ Electrum - Lightweight Bitcoin client
 Getting started
 ===============
 
-Electrum is a pure python application. If you want to use the
+Electrum for CPUchain is a pure python application. If you want to use the
 Qt interface, install the Qt dependencies::
 
     sudo apt-get install python3-pyqt5
@@ -59,8 +60,8 @@ Development version
 
 Check out the code from GitHub::
 
-    git clone git://github.com/spesmilo/electrum.git
-    cd electrum
+    git clone git://github.com/cpuchain/electrum-cpu.git
+    cd electrum-cpu
 
 Run install (this should install dependencies)::
 
@@ -83,10 +84,16 @@ Create translations (optional)::
 Creating Binaries
 =================
 
-Linux
------
+Linux (tarball)
+---------------
 
 See :code:`contrib/build-linux/README.md`.
+
+
+Linux (AppImage)
+----------------
+
+See :code:`contrib/build-linux/appimage/README.md`.
 
 
 Mac OS X / macOS
