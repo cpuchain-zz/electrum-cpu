@@ -282,25 +282,24 @@ class Blockchain(Logger):
 
     @classmethod
     def verify_header(cls, header: dict, prev_hash: str, target: int, check_header_bool: bool, expected_header_hash: str=None) -> None:
-        return #verify header pass...
-#        height = header.get('block_height')
-#        if prev_hash != header.get('prev_block_hash'):
-#            raise Exception("prev hash mismatch: %s vs %s" % (prev_hash, header.get('prev_block_hash')))
-#        if check_header_bool is False and height % 12 != 0:
-#            return
-#        _hash = hash_header(header)
-#        if expected_header_hash and expected_header_hash != _hash:
-#            raise Exception("hash mismatches with expected: {} vs {}".format(expected_header_hash, _hash))
-#        if constants.net.TESTNET:
-#            return
-#        if height % 2016 != 0 and height // 2016 < len(constants.net.CHECKPOINTS) or height >= len(constants.net.CHECKPOINTS)*2016 and height <= len(constants.net.CHECKPOINTS)*2016 + 90:
-#            return
-#        bits = cls.target_to_bits(target)
-#        if bits != header.get('bits'):
-#            raise Exception("bits mismatch: %s vs %s" % (bits, header.get('bits')))
-#        block_hash_as_num = int.from_bytes(bfh(_hash), byteorder='big')
-#        if block_hash_as_num > target:
-#            raise Exception(f"insufficient proof of work: {block_hash_as_num} vs target {target}")
+        height = header.get('block_height')
+        if prev_hash != header.get('prev_block_hash'):
+            raise Exception("prev hash mismatch: %s vs %s" % (prev_hash, header.get('prev_block_hash')))
+        if check_header_bool is False and height % 12 != 0:
+            return
+        _hash = hash_header(header)
+        if expected_header_hash and expected_header_hash != _hash:
+            raise Exception("hash mismatches with expected: {} vs {}".format(expected_header_hash, _hash))
+        if constants.net.TESTNET:
+            return
+        if height // 2016 < len(constants.net.CHECKPOINTS) and height % 2016 != 2015 or height >= len(constants.net.CHECKPOINTS)*2016 and height <= len(constants.net.CHECKPOINTS)*2016 + 92:
+            return
+        bits = cls.target_to_bits(target)
+        if bits != header.get('bits'):
+            raise Exception("bits mismatch: %s vs %s" % (bits, header.get('bits')))
+        block_hash_as_num = int.from_bytes(bfh(_hash), byteorder='big')
+        if block_hash_as_num > target:
+            raise Exception(f"insufficient proof of work: {block_hash_as_num} vs target {target}")
 
     def verify_chunk(self, index: int, data: bytes) -> None:
         num = len(data) // HEADER_SIZE
@@ -506,15 +505,13 @@ class Blockchain(Logger):
         # params
         T = 60
         N = 90
-        k = N * (N + 1) * T / 2
+        k = N * (N + 1) * T // 2
         sum_target = 0
-        target = 0
-        next_target = 0
         t = 0
         j = 0
         solvetime = 0
 
-        for i in range(height - N + 1, height + 1):
+        for i in range(height - N, height):
             cur = chain.get(i)
             #cur = self.read_header(i)
             if cur is None:
@@ -533,41 +530,36 @@ class Blockchain(Logger):
             j += 1
             t += solvetime * j
 
-            target = self.bits_to_target(cur.get('bits'))
-
-            sum_target += target / (k * N)
+            sum_target += self.bits_to_target(cur.get('bits')) // (k * N)
 
         if t < k // 10:
             t = k // 10
 
         next_target = t * sum_target
-
         next_target = min(next_target, MAX_TARGET)
-
         return next_target
-
 
     def get_target(self, height, chain=None) -> int:
         # compute target from chunk x, used in chunk x+1
         if constants.net.TESTNET:
             return 0
-        elif height // 2016 < len(self.checkpoints) and height % 2016 == 0:
+        elif height // 2016 < len(self.checkpoints) and height % 2016 == 2015:
             h, t = self.checkpoints[height // 2016]
             return t
-        elif height // 2016 < len(self.checkpoints) and height % 2016 != 0:
+        elif height // 2016 < len(self.checkpoints) and height % 2016 != 2015 or height <= len(self.checkpoints) * 2016 + 92:
             return 0
         else:
-            return 0
-#            return self.get_target_lwma(height, chain)
+            return self.get_target_lwma(height, chain)
 
     @classmethod
     def bits_to_target(cls, bits: int) -> int:
-        MM = 256*256*256
-        a = bits%MM
-        if a < 0x8000:
-            a *= 256
-        target = (a) * pow(2, 8 * (bits//MM - 3))
-        return target
+        bitsN = (bits >> 24) & 0xff
+        if not (0x03 <= bitsN <= 0x1f):
+            raise Exception("First part of bits should be in [0x03, 0x1f]")
+        bitsBase = bits & 0xffffff
+        if not (0x8000 <= bitsBase <= 0x7fffff):
+            raise Exception("Second part of bits should be in [0x8000, 0x7fffff]")
+        return bitsBase << (8 * (bitsN-3))
 
     @classmethod
     def target_to_bits(cls, target: int) -> int:
@@ -658,7 +650,8 @@ class Blockchain(Logger):
         n = self.height() // 2016
         for index in range(n):
             h = self.get_hash((index+1) * 2016 -1)
-            target = self.get_target(index * 2016)
+            header = self.read_header((index+1) * 2016 -1)
+            target = self.bits_to_target(header.get('bits'))
             cp.append((h, target))
         return cp
 
