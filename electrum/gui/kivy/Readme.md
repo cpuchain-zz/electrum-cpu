@@ -12,13 +12,22 @@ This assumes an Ubuntu (x86_64) host, but it should not be too hard to adapt to 
 similar system. The docker commands should be executed in the project's root
 folder.
 
+0. Install Python 3.7 (required)
+
+    ```
+    $ sudo add-apt-repository -y ppa:deadsnakes/ppa
+    $ sudo apt-get update
+    $ sudo apt-get install -y build-essential libpython3.7 libpython3.7-dev libpython3.7-minimal libpython3.7-stdlib python3.7 python3.7-dev python3.7-distutils python3.7-lib2to3 python3.7-minimal python3.7-venv python3.7-doc binfmt-support cmake gettext
+    $ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && sudo python3.7 get-pip.py && rm get-pip.py
+    ```
+
 1. Install Docker
 
     ```
-    $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    $ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    $ sudo apt-get update
-    $ sudo apt-get install -y docker-ce
+    $ curl -fsSL https://get.docker.com/ | sudo sh
+    $ sudo usermod -aG docker $USER
+    $ sudo curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    $ sudo chmod +x /usr/local/bin/docker-compose
     ```
 
 2. Build image
@@ -30,7 +39,7 @@ folder.
 3. Build locale files
 
     ```
-    $ ./contrib/pull_locale
+    $ python3.7 ./contrib/pull_locale
     ```
 
 4. Prepare pure python dependencies
