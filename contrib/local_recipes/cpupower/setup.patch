@@ -1,0 +1,20 @@
+diff -crN cpupower_python.orig/setup.py cpupower_python/setup.py
+*** cpupower_python.orig/setup.py       2019-07-15 02:28:04.247861304 +0900
+--- cpupower_python/setup.py    2019-07-15 02:29:10.790870620 +0900
+***************
+*** 6,12 ****
+                                         'yespower-opt.c',
+                                         'sha256.c'
+                                         ],
+!                             extra_compile_args=['-O2', '-funroll-loops', '-fomit-frame-pointer'],
+                              include_dirs=['.'])
+
+  setup (name = 'cpupower',
+--- 6,12 ----
+                                         'yespower-opt.c',
+                                         'sha256.c'
+                                         ],
+!                             extra_compile_args=['-O2'],
+                              include_dirs=['.'])
+
+  setup (name = 'cpupower',
