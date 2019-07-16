@@ -70,7 +70,7 @@ jobs:
         - sudo chown -R 1000:1000 .
         # Output something every minute or Travis kills the job
         - while sleep 60; do echo "=====[ $SECONDS seconds still running ]====="; done &
-        - sudo docker run -it -u 1000:1000 --rm --name electrum-android-builder-cont -v $PWD:/home/user/wspace/electrum-cpu --workdir /home/user/wspace/electrum-cpu -e APK_PASSWORD=$APK_PASSWORD electrum-android-builder-img ./contrib/make_apk_travis
+        - sudo docker run -it -u 1000:1000 --rm --name electrum-android-builder-cont -v $PWD:/home/user/wspace/electrum-cpu --workdir /home/user/wspace/electrum-cpu -e APK_PASSWORD=$APK_PASSWORD electrum-android-builder-img ./contrib/make_apk travis
         # kill background sleep loop
         - kill %1
         - ls -la bin
