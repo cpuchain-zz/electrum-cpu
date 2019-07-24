@@ -20,7 +20,7 @@ from electrum.logging import Logger
 
 class UpdateCheck(QWidget, Logger):
     url = "https://cpuchain.org/version"
-    download_url = "https://cpuchain.org/download"
+    download_url = "https://cpuchain.org/download-page.html#home"
 
     VERSION_ANNOUNCEMENT_SIGNING_KEYS = (
         "CPZ1y3vwjW8xcqL7H7w2xdSvRipUMatG11",
