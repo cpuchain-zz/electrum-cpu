@@ -20,11 +20,12 @@ cache:
   - pip: true
   - directories:
     - /tmp/electrum-cpu-build
-script:
-    - tox
-after_success:
-    - if [ "$TRAVIS_BRANCH" = "master" ]; then pip install requests && contrib/push_locale; fi
-    - coveralls
+#script:
+#    - tox
+#after_success:
+#    - if [ "$TRAVIS_BRANCH" = "master" ]; then pip install requests && contrib/push_locale; fi
+#    - coveralls
+script: python3 setup.py build
 jobs:
   include:
     - stage: binary builds
