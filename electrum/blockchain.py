@@ -546,10 +546,12 @@ class Blockchain(Logger):
         elif height // 2016 < len(self.checkpoints) and height % 2016 == 2015:
             h, t = self.checkpoints[height // 2016]
             return t
-        elif height // 2016 < len(self.checkpoints) and height % 2016 != 2015 or height <= len(self.checkpoints) * 2016 + 92:
+        elif height // 2016 < len(self.checkpoints) and height % 2016 != 2015:
             return 0
-        else:
+        try:
             return self.get_target_lwma(height, chain)
+        except:
+            return 0
 
     @classmethod
     def bits_to_target(cls, bits: int) -> int:
